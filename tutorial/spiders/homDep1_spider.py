@@ -16,10 +16,12 @@ class homDep1_Spider(scrapy.Spider):
     def parse(self, response):
         crawlBlock = response.css('section.grid')[0]
         crawlDiv = crawlBlock.css('div.col__12-12')[1]
-        for item in response.css('section.grid ul.storeList'):
+        storeList = crawlDiv.css('ul.storeList')
+        storeListItem = storeList.css('li.storeList__item')
+        for item in storeListItem:
             yield {
                 # 'storeList' : response.css('section.grid ul.storeList').get(),
-                'City' : item.css('li.storeList__item a::text').get(),
+                'City' : storeListItem.css('a::text').get(),
                 # 'Address' : item.css('ul.storeList__details li::text')[0].get(),
                 # 'CityStateZip' : item.css('ul.storeList__details li::text')[1].get(),
                 # 'Phone' : item.css('ul.storeList__details li::text')[2].get(),
