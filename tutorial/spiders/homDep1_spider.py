@@ -1,5 +1,5 @@
-# gq2_spider.py
-# getting started with a scrapy web scraper
+# homDep1_spider.py
+# scrape locations of Home Depot Stores in Texas
 
 
 # imports  =========================================
@@ -18,15 +18,16 @@ class homDep1_Spider(scrapy.Spider):
         crawlDiv = crawlBlock.css('div.col__12-12')[1]
         storeList = crawlDiv.css('ul.storeList')
         storeListItem = storeList.css('li.storeList__item')
+        # storeListItem = storeList.css('li.storeList__item')
+        count = 0 # sentinel val
         for item in storeListItem:
             yield {
-                # 'storeList' : response.css('section.grid ul.storeList').get(),
-                'City' : storeListItem.css('a::text').get(),
-                # 'Address' : item.css('ul.storeList__details li::text')[0].get(),
-                # 'CityStateZip' : item.css('ul.storeList__details li::text')[1].get(),
-                # 'Phone' : item.css('ul.storeList__details li::text')[2].get(),
-                #'Details' : item.css('ul.storeList__details li::text').get(),
+                'City' : item.css('a::text').get(),
+                'Address' : item.css('ul.storeList__details li::text')[0].get(),
+                'CityStateZip' : item.css('ul.storeList__details li::text')[1].get(),
+                'Phone' : item.css('ul.storeList__details li::text')[2].get(),
             }
+            count += 1
             
         '''
         nextPage = response.css('li.pages-item-next a::attr(href)').get()
