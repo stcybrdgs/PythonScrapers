@@ -18,7 +18,7 @@ class homeDepotTX_Spider(scrapy.Spider):
         crawlDiv = crawlBlock.css('div.col__12-12')[1]
         storeList = crawlDiv.css('ul.storeList')
         storeListItem = storeList.css('li.storeList__item')
-        # storeListItem = storeList.css('li.storeList__item')
+        
         for item in storeListItem:
             yield {
                 'City' : item.css('a::text').get(),
