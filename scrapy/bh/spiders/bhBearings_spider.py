@@ -15,18 +15,24 @@ class bhBearings_Spider(scrapy.Spider):
     
     def parse(self, response):
         productsBlockList = response.css('div.filter-box__wrapper section.block')
-        productListItem = productsBlockList.css('ul.list-view li.list-view__item')
-        productDetail = productListItem.css('article')
-        productCell = productDetail.css('div.list-view__cell')
+        productList = productsBlockList.css('ul.list-view') # count = 1
+        productListItem = productList.css('li.list-view__item') # count = 24
+        #productCell = productListItem.css('article div.list-view__cell') # count = 47
         
-        i = 0
-        for product in productDetail:
+        #i = 0
+        for item in productListItem:
             yield {
-                'ProductName' : productCell.css('h4 a::text')[i].get(),
-                'OrderCode' : productCell.css('div.row ul.list-view__details li strong::text')[0].get(),
-                'Brand' : productCell.css('div.row ul.list-view__details li strong::text')[1].get(),
-                'MfrPartNo' : productCell.css('div.row ul.list-view__details li strong::text')[2].get(),
+                    'ProductName' : item.css('h4 a::text').get(),
+                    'OrderCode' : item.css('ul.list-view__details li strong::text')[0].get(),
+                    'Brand' : item.css('ul.list-view__details li strong::text')[1].get(),
+                    'MfrPartNo' : item.css('ul.list-view__details li strong::text')[2].get(),
             }
+            '''
+            'OrderCode' : item.css('ul.list-view__details li strong::text')[0].get(),
+            'Brand' : item.css('ul.list-view__details li strong::text')[1].get(),
+            'MfrPartNo' : item.css('ul.list-view__details li strong::text')[2].get(),
+            '''            
+            #i += 1
         
         '''
         crawlBlock = response.css('div.filter-box__block ul.filter-list li.filter-list__item')
