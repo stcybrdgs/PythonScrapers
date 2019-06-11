@@ -1,57 +1,74 @@
 # scrape product info
 # rem disable follow robot.txt 
+'''
+scrape product info from the buck & hickman web site
 
+rem test spider:
+    case 1:  scrape landing page (depth 1)
+    case 2:  scrape landing page then depth 2
+    case 3:  scrape landing page then depth n
+    case 4:  scrape list of urls, then use it to
+             scrape cases 2 and 3
+'''
 # imports  =========================================
 import scrapy
-# import csv
+import csv
 
 # classes  =========================================
-class bhBearings_Spider(scrapy.Spider):
+class bhBearings3_Spider(scrapy.Spider):
     name = "bhBearings3"
     start_urls = [
             'https://www.buckandhickman.com/en/shop/products/categories/Bearings/13/84888',
     ]
 
+    # master spider
     def parse(self, response):
-        # linkListItemNames = []
-        # linkListItemURLs = []
+        linkNames = []
+        linkURLs = []
         
-        allLinkLists = response.css('ul.filter-box__list li.filter-box__item')
-        linkList = allLinkLists[0]
+        linkList = response.css('ul.filter-box__list li.filter-box__item')[0]
         linkName = linkList.css('a::text')  # string with white space
         linkURL = linkList.css('a::attr(href)')  
         
-        
+        # populate parallel arrays for linkName / linkURL
         i = 0
         for item in linkName:
             n = linkName[i].get()
             u = linkURL[i].get()
-            # linkListItemNames.append(n.strip())
-            # linkListItemURLs.append(u.strip())
-            yield{
-                    'Product Name' : n.strip(),
-                    'Product Link' : u.strip(),
+            if n.find('Bearing') >= 0 and item != 'Bearings':
+                linkNames.append(n.strip())
+                linkURLs.append(u.strip())
+            i += 1
+
+        #for l in linkURLs:
+        l = "https://www.buckandhickman.com/en/shop/products/results?page=1&category=87210&path=13-09"
+        request = scrapy.Request(l, callback=self.parse_page1_info)
+        yield request
+
+    # parse product info for items on page 2
+    def parse_page1_info(self, response):
+        page = response.url
+
+        pList = response.css('ul.list-view')
+        pListItem = pList.css('li.list-view__item') 
+
+        pInfo = pListItem.css('div.list-view__cell')
+        pul = pInfo.css('ul.list-view__details')
+        pli = pul.css('li.list-view__detail')
+
+        i = 0
+        for p in pListItem:
+            #name = pInfo.css('h4 a::text')[i].get()
+            yield { 
+                'name': pInfo.css('h4 a::text')[i].get(), 
+                'label': pli[i].css('p::attr(itemprop)').get(),
+                'value': pli[i].css('p::attr(content)').get()
             }
             i += 1
 
-            
-        
-            '''prin
-            yield {
-                    'ProductName' : item.css('h4 a::text').get(),
-                    'OrderCode' : item.css('ul.list-view__details li strong::text')[0].get(),
-                    'Brand' : item.css('ul.list-view__details li strong::text')[1].get(),
-                    'MfrPartNo' : item.css('ul.list-view__details li strong::text')[2].get(),
-            }
-       '''
-        
-        '''
-        nextPage = response.css('li.pages-item-next a::attr(href)').get()
-        if nextPage is not None:
-            nextPage = response.urljoin(nextPage)
-            yield scrapy.Request(nextPage, callback=self.parse)
-        '''
-        
+
+
+
 # main     =========================================
 def main():
 	print('Done.')
