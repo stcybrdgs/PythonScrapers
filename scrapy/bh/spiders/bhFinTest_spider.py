@@ -12,6 +12,7 @@
 
 # imports  =========================================
 import scrapy
+import csv
 
 
 # classes  =========================================
@@ -33,19 +34,29 @@ class bhFinTest_Spider(scrapy.Spider):
             nuhref = href + l
             links.append(nuhref)
         
+        # print('==============================================')
+        # print('==============================================')
+
         # call secondary parsing functions to parse
         # responses from calls to links in the list of links
         for l in links:
-            # call secondary parsing function...
-            request = scrapy.Request(l, callback=self.parse_quote)
-            
-            # output data from the secondary parsing function
+            request = scrapy.Request(l, callback=self.parse_quotes)
             yield request
         
     # secondary parsing function to process list of links    
-    def parse_quote(self, response):
+    def parse_quotes(self, response):
         page = response.url
         quote = response.css('span::text').get()
+        
+        # write output to csv file
+        with open('bhTester_flat.csv', mode='a') as tester_file:
+            tester_writer = csv.writer(tester_file, delimiter=',',
+                quotechar = '"', quoting=csv.QUOTE_MINIMAL)
+            tester_writer.writerow([page, quote])
+
+        # tester_file.close()
+        
+        # send dictionary back to caller
         yield { 
             'url': page,
             'quote': quote,
