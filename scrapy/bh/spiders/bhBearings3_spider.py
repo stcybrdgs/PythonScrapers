@@ -57,17 +57,30 @@ class bhBearings3_Spider(scrapy.Spider):
         pli = pul.css('li.list-view__detail')
 
         i = 0
-        for p in pListItem:
-            #name = pInfo.css('h4 a::text')[i].get()
-            yield { 
-                'name': pInfo.css('h4 a::text')[i].get(), 
-                'label': pli[i].css('p::attr(itemprop)').get(),
-                'value': pli[i].css('p::attr(content)').get()
-            }
-            i += 1
+        attrList = ['sku', 'brand', 'mpn']
 
+        for pItem in pListItem:
+            product = pInfo.css('h4 a::text')[i].get()
+            sku = ''
+            brand = ''
+            mpn = ''
 
+            for uItem in pul:
+                itemprop = pli[i].css('p::attr(itemprop)').get()
+                content = pli[i].css('p::attr(content)').get()
 
+                if itemprop in attrList:
+                    if itemprop == 'sku': sku = content
+                    elif itemprop == 'brand': brand = content
+                    elif itemprop == 'mpn': mpn = content
+                i += 1
+            
+        yield { 
+            'Product': product, 
+             label : pli[i].css('p::attr(itemprop)').get(),
+            'Brand': pli[i].css('p::attr(content)').get()
+        }
+         
 
 # main     =========================================
 def main():
