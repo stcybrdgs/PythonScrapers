@@ -65,21 +65,27 @@ class bhBearings3_Spider(scrapy.Spider):
             brand = ''
             mpn = ''
 
+            j = i
             for uItem in pul:
-                itemprop = pli[i].css('p::attr(itemprop)').get()
-                content = pli[i].css('p::attr(content)').get()
+                itemprop = pli[j].css('p::attr(itemprop)').get()
+                content = pli[j].css('p::attr(content)').get()
 
                 if itemprop in attrList:
                     if itemprop == 'sku': sku = content
                     elif itemprop == 'brand': brand = content
                     elif itemprop == 'mpn': mpn = content
-                i += 1
-            
-        yield { 
-            'Product': product, 
-             label : pli[i].css('p::attr(itemprop)').get(),
-            'Brand': pli[i].css('p::attr(content)').get()
-        }
+                # end if
+                j += 1
+            # end for
+
+            yield { 
+                'Product': product, 
+                'SKU': sku,
+                'Brand': brand,
+                'MfrPartNo': mpn
+            }
+            i += 1
+        # end for 
          
 
 # main     =========================================
