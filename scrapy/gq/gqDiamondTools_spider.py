@@ -19,9 +19,9 @@ import os, sys
 import scrapy
 
 # classes  =====================================================================
-class GQBlades_Spider(scrapy.Spider):
-    name = "gqBlades"
-    start_urls = ['https://www.granquartz.com/stone-fabrication/blades']
+class GQDiamondTools_Spider(scrapy.Spider):
+    name = "gqDiamondTools"
+    start_urls = ['https://www.granquartz.com/concretes/diamond-tools-abrasives']
 
     # LEVEL 1 PAGE  --------------------------------------------------------
     def parse(self, response):
