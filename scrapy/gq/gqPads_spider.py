@@ -42,23 +42,15 @@ class GQPads_Spider(scrapy.Spider):
             yield scrapy.Request(pu, callback=self.get_product_data)
 
         # look for a 'nextpage' hyperlink and set it to empty if there isn't one
-        nexts = []
-        nexts_unq = []
         try:
-            nexts = response.css("li.pages-item-next a.next::attr('href')").getall()
-            next_page = nexts[0]  # if there are dupe links to next, just keep the first one
+            next = response.css("li.pages-item-next a.next::attr('href')").get()
         except:
-            next_page = ''
+            next = ''
 
         # if there is a 'nextpage' hyperlink, follow it by running parse() recursively
-        if len(next_page) > 0:
-            # reset the start_url
-            #start_urls = []
-            #start_urls.append(next_page)
-
-            parse(self, next_page)
-            #url = response.urljoin(next_page[0].extract())
-            #yield scrapy.Request(url, self.parse_articles_follow_next_page)
+        if len(next) > 0:
+            url = response.urljoin(next)
+            yield scrapy.Request(url, self.parse)
 
     # LEVEL 2 PAGE  --------------------------------------------------------
     # scrape the product data and return it to the caller
